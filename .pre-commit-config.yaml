@@ -1,0 +1,53 @@
+repos:
+  # 1️⃣ Commit message enforcement (Conventional Commits)
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.8.3
+    hooks:
+      - id: commitizen
+        language_version: "python3.12"
+        stages: ["commit-msg"]
+
+  # 2️⃣ General file hygiene & oops prevention
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace # Remove trailing spaces
+      - id: end-of-file-fixer # Ensure single newline at EOF
+      - id: check-yaml # Validate YAML syntax
+      - id: check-added-large-files # Prevent committing huge files
+      - id: check-merge-conflict # Prevent unresolved merge conflicts
+      - id: debug-statements # Detect print() & pdb.set_trace()
+
+  # 3️⃣ Python linting & formatting (Ruff)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.12.8
+    hooks:
+      - id: ruff
+        args: [--fix] # Auto-fix lint issues
+      - id: ruff-format # Format code
+
+  # 4️⃣ Static type checking
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.17.1
+    hooks:
+      - id: mypy
+
+  # 5️⃣ Security scanning (Bandit for Python)
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.8.6
+    hooks:
+      - id: bandit
+        args: ["-ll"] # Run in high severity mode
+
+  # 6️⃣ Secret detection (detect-secrets)
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: ["--baseline", "linter/.secrets.baseline"]
+
+default_language_version:
+  python: python3
+
+# Top-level global settings
+exclude: '.*\.csv$' #
