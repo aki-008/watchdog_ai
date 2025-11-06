@@ -126,6 +126,36 @@ def parse_replacements(response: str):
 def detect_pii(text: str):
     """Detect if text contains any PII using token classification model."""
     inputs = ner_tokenizer(text, return_tensors="pt")
+
+
+app = FastAPI()
+
+
+@app.get("/")
+async def root():
+    return {"message": "AI Monitoring Backend Running"}
+
+
+class Item(BaseModel):
+    item_id: int
+
+
+@app.post("/items/")
+async def create_item(item: Item):
+    print(f"Received item data: {item.item_id}")
+    # In a real application, you would save this data to a database
+    return {"message": "Item created successfully", "item": item.item_id}
+
+
+class TextData(BaseModel):
+    text: str
+
+
+@app.post("/send_data/")
+async def send_data(data: TextData):
+    text = data.text
+    print(f"Received text for analysis: {text}")
+    inputs = tokenizer(text, return_tensors="pt")
     with torch.no_grad():
         logits = ner_model(**inputs).logits
     predictions = torch.argmax(logits, dim=2)
@@ -199,6 +229,9 @@ async def anonymize(req: AnonymizeRequest):
 
     result = await run_in_threadpool(run_anonymizer, req.text)
     return result
+    predicted_token_class = [model.config.id2label[t.item()] for t in predictions[0]]
+    result_bool = check_info(predicted_token_class)
+    return {"sensitive": result_bool, "labels": predicted_token_class}
 
 
 @app.post("/smart_anonymize")
@@ -206,3 +239,10 @@ async def smart_anonymize(req: AnonymizeRequest):
     """Automatically detect & anonymize text with logging."""
     print(f"Received text for anonymization: {req.text[:80]}...")
     return await run_in_threadpool(run_anonymizer, req.text)
+
+
+def check_info(pred):
+    for i in pred:
+        if i != "O":
+            return True
+    return False

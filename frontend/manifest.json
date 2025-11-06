@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "manifest_version": 2,
     "name": "AI Chat Privacy Guardian",
     "version": "1.0.0",
@@ -49,4 +50,35 @@
     "web_accessible_resources": [
         "warning.html"
     ]
+=======
+  "manifest_version": 3,
+  "name": "AI Prompt Monitor",
+  "version": "1.0.0",
+  "description": "Monitors user prompts and checks for sensitive content via a backend AI service.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://chat.openai.com/*",
+    "https://claude.ai/*",
+    "https://gemini.google.com/*",
+    "http://127.0.0.1:8000/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+        }
+  ],
+  "action": {
+    "default_title": "AI Monitor Settings",
+    "default_popup": "popup.html"
+  }
+>>>>>>> origin/main
 }
