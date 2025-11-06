@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
 from transformers import AutoTokenizer, AutoModelForTokenClassification
 import torch
 
@@ -14,26 +15,35 @@ app = FastAPI()
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "AI Monitoring Backend Running"}
+
+
+class Item(BaseModel):
+    item_id: int
 
 
 @app.post("/items/")
-async def create_item(item_id: int):
-    print(f"Received item data: {item_id}")
+async def create_item(item: Item):
+    print(f"Received item data: {item.item_id}")
     # In a real application, you would save this data to a database
-    return {"message": "Item created successfully", "item": item_id}
+    return {"message": "Item created successfully", "item": item.item_id}
+
+
+class TextData(BaseModel):
+    text: str
 
 
 @app.post("/send_data/")
-async def send_data(text: str):
-    print(f"Received item data: {text}")
+async def send_data(data: TextData):
+    text = data.text
+    print(f"Received text for analysis: {text}")
     inputs = tokenizer(text, return_tensors="pt")
     with torch.no_grad():
         logits = model(**inputs).logits
     predictions = torch.argmax(logits, dim=2)
     predicted_token_class = [model.config.id2label[t.item()] for t in predictions[0]]
-    result = check_info(predicted_token_class)
-    return result
+    result_bool = check_info(predicted_token_class)
+    return {"sensitive": result_bool, "labels": predicted_token_class}
 
 
 def check_info(pred):
