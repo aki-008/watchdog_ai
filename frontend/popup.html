@@ -1,96 +1,225 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Monitor Settings</title>
-    <style>
-        /* Basic inline CSS for the popup */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            padding: 15px;
-            width: 250px;
-            background-color: #f7f7f7;
-        }
-        h3 {
-            margin-top: 0;
-            color: #333;
-            font-size: 1.1em;
-        }
-        .status-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #ddd;
-        }
-        #status-light {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 8px;
-        }
-        #status-text {
-            font-weight: bold;
-            color: #555;
-        }
-        /* Toggle Switch Styling (standard component) */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 40px;
-            height: 20px;
-        }
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 20px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
-            left: 2px;
-            bottom: 2px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        input:checked + .slider {
-            background-color: #2196F3; /* Blue when checked */
-        }
-        input:checked + .slider:before {
-            transform: translateX(20px);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      width: 400px;
+      padding: 0;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .content {
+      padding: 20px;
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .section h3 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background: #f5f5f5;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    .status-icon {
+      width: 30px;
+      height: 30px;
+      margin-right: 10px;
+      font-size: 20px;
+    }
+
+    .status-text {
+      flex: 1;
+      font-size: 13px;
+    }
+
+    .button {
+      width: 100%;
+      padding: 12px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .button:hover {
+      background: #5568d3;
+    }
+
+    .button.secondary {
+      background: #6c757d;
+    }
+
+    .button.secondary:hover {
+      background: #5a6268;
+    }
+
+    .leak-item {
+      padding: 10px;
+      background: #fff3cd;
+      border-left: 3px solid #ffc107;
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+
+    .leak-type {
+      font-weight: 600;
+      color: #856404;
+      font-size: 12px;
+    }
+
+    .leak-value {
+      color: #333;
+      font-size: 13px;
+      margin: 5px 0;
+    }
+
+    .leak-actions {
+      display: flex;
+      gap: 5px;
+      margin-top: 8px;
+    }
+
+    .leak-actions button {
+      padding: 5px 10px;
+      font-size: 11px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .copy-btn {
+      background: #667eea;
+      color: white;
+    }
+
+    .settings {
+      padding: 15px 20px;
+      background: #f8f9fa;
+      border-top: 1px solid #dee2e6;
+    }
+
+    .settings label {
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .settings input[type="checkbox"] {
+      margin-right: 8px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6c757d;
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
-    <h3>🤖 AI Prompt Monitor</h3>
-    <div class="status-section">
-        <div>
-            <span id="status-light"></span>
-            <span id="status-text">Status: Checking...</span>
+  <div class="header">
+    <h1>🛡️ Privacy Guardian</h1>
+  </div>
+
+  <div class="content">
+    <div class="section">
+      <h3>Protection Status</h3>
+      <div class="status" id="status">
+        <div class="status-icon">✅</div>
+        <div class="status-text">
+          <strong>Active</strong><br>
+          <span id="status-detail">Monitoring your AI chats</span>
         </div>
-        
-        <label class="switch">
-            <input type="checkbox" id="toggleSwitch">
-            <span class="slider"></span>
-        </label>
+      </div>
     </div>
 
-    <script src="popup.js"></script>
+    <div class="section">
+      <button class="button" id="scanBtn">Scan Current Chat History</button>
+      <button class="button secondary" id="exportBtn">Export Leak Report</button>
+    </div>
+
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>Scanning messages...</p>
+    </div>
+
+    <div class="section" id="resultsSection" style="display: none;">
+      <h3>Detected Leaks</h3>
+      <div id="leaksList"></div>
+    </div>
+
+    <div class="empty-state" id="emptyState" style="display: none;">
+      <div class="empty-state-icon">✨</div>
+      <p>No privacy leaks detected!</p>
+    </div>
+  </div>
+
+  <div class="settings">
+    <label>
+      <input type="checkbox" id="autoScanToggle" checked>
+      Auto-scan on page load
+    </label>
+    <label>
+      <input type="checkbox" id="notificationsToggle" checked>
+      Show notifications
+    </label>
+  </div>
+
+  <script src="popup.js"></script>
 </body>
 </html>
